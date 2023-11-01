@@ -1,0 +1,60 @@
+datasource db {
+    provider = "mysql"
+    url      = "mysql://admin:12345678@database-1.ckckwtlwn9bz.us-east-1.rds.amazonaws.com:3306/odudinhx"
+}
+
+generator db {
+    provider             = "prisma-client-py"
+    interface            = "asyncio"
+    recursive_type_depth = 5
+}
+
+model Paciente {
+    id                  Int          @id @default(autoincrement())
+    nome                String
+    informacoesPessoais String
+    historicoMedico     String
+    unidadeSaude        UnidadeSaude @relation(fields: [unidadeId], references: [id])
+    unidadeId           Int
+}
+
+model FornecedoresProdutos {
+    id               Int             @id @default(autoincrement())
+    nome             String
+    contato          String
+    catalogoProdutos String
+    produtos         ProdutoMedico[]
+}
+
+model UnidadeSaude {
+    id            Int        @id @default(autoincrement())
+    nome          String
+    localizacao   String
+    especialidade String
+    capacidade    Int
+    pacientes     Paciente[]
+}
+
+model VeiculoMedico {
+    id         Int              @id @default(autoincrement())
+    detalhes   String
+    manutencao String
+    rotas      RotaTransporte[]
+}
+
+model ProdutoMedico {
+    id           Int                  @id @default(autoincrement())
+    descricao    String
+    estoque      Int
+    validade     String
+    fornecedor   FornecedoresProdutos @relation(fields: [fornecedorId], references: [id])
+    fornecedorId Int
+}
+
+model RotaTransporte {
+    id             Int           @id @default(autoincrement())
+    detalhesRota   String
+    otimizacaoRota String
+    veiculoMedico  VeiculoMedico @relation(fields: [veiculoId], references: [id])
+    veiculoId      Int
+}
