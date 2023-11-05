@@ -8,53 +8,61 @@ generator db {
     interface            = "asyncio"
     recursive_type_depth = 5
 }
-
 model Paciente {
-    id                  Int          @id @default(autoincrement())
-    nome                String
-    informacoesPessoais String
-    historicoMedico     String
-    unidadeSaude        UnidadeSaude @relation(fields: [unidadeId], references: [id])
-    unidadeId           Int
+    id                   Int                    @id @default(autoincrement())
+    nome                 String
+    endereco             String
+    sexo                 String
+    TransporteDePaciente TransporteDePaciente[]
 }
 
-model FornecedoresProdutos {
-    id               Int             @id @default(autoincrement())
-    nome             String
-    contato          String
-    catalogoProdutos String
-    produtos         ProdutoMedico[]
-}
-
-model UnidadeSaude {
-    id            Int        @id @default(autoincrement())
-    nome          String
-    localizacao   String
-    especialidade String
-    capacidade    Int
-    pacientes     Paciente[]
-}
-
-model VeiculoMedico {
-    id         Int              @id @default(autoincrement())
-    detalhes   String
-    manutencao String
-    rotas      RotaTransporte[]
+model UnidadeDeSaude {
+    id                     Int                      @id @default(autoincrement())
+    nome                   String
+    endereco               String
+    TransporteDePaciente   TransporteDePaciente[]
+    EntregaDeProdutoMedico EntregaDeProdutoMedico[]
 }
 
 model ProdutoMedico {
-    id           Int                  @id @default(autoincrement())
-    descricao    String
-    estoque      Int
-    validade     String
-    fornecedor   FornecedoresProdutos @relation(fields: [fornecedorId], references: [id])
-    fornecedorId Int
+    id                     Int                      @id @default(autoincrement())
+    nome                   String
+    descricao              String
+    estoque_atual          Int
+    EntregaDeProdutoMedico EntregaDeProdutoMedico[]
 }
 
-model RotaTransporte {
-    id             Int           @id @default(autoincrement())
-    detalhesRota   String
-    otimizacaoRota String
-    veiculoMedico  VeiculoMedico @relation(fields: [veiculoId], references: [id])
-    veiculoId      Int
+model Veiculo {
+    id                   Int                    @id @default(autoincrement())
+    tipo                 String
+    capacidade           Int
+    TransporteDePaciente TransporteDePaciente[]
+}
+
+model TransporteDePaciente {
+    id                   Int            @id @default(autoincrement())
+    paciente             Paciente       @relation(fields: [pacienteId], references: [id])
+    pacienteId           Int
+    unidade_de_saude     UnidadeDeSaude @relation(fields: [unidadeId], references: [id])
+    unidadeId            Int
+    data_hora_transporte DateTime
+    veiculo              Veiculo        @relation(fields: [veiculoId], references: [id])
+    veiculoId            Int
+}
+
+model EntregaDeProdutoMedico {
+    id                  Int            @id @default(autoincrement())
+    produto_medico      ProdutoMedico  @relation(fields: [produtoId], references: [id])
+    produtoId           Int
+    unidade_de_saude    UnidadeDeSaude @relation(fields: [unidadeId], references: [id])
+    unidadeId           Int
+    data_hora_entrega   DateTime
+    quantidade_entregue Int
+}
+
+model RotaDeTransporte {
+    id                    Int    @id @default(autoincrement())
+    descricao_rota        String
+    pontos_coleta_entrega String
+    otimizacao_rota       String
 }
